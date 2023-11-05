@@ -4,3 +4,6 @@
 *.pdb
 *.png
 *.jpg
+
+code_file
+quiz.py
