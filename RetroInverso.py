@@ -65,9 +65,9 @@ laaa['T'] = 'N[C@@]([H])([C@]([H])(O)C)C(=O)'
 daaa['T'] = 'N[C@@]([C@]([H])(O)C)([H])C(=O)'
 
 
-FASTA = 'CAWAFAAAC'
-fasta = FASTA[::-1]
-type = 'Disulfide'
+# FASTA = 'CAWAFAAAC'
+# fasta = FASTA[::-1]
+# type = 'Disulfide'
 
 
 
@@ -128,24 +128,24 @@ with col2:
 
 if bt1:
     # 3D座標を生成
-    molecule = Chem.AddHs(l_img)
-    AllChem.EmbedMolecule(l_img)
-    AllChem.UFFOptimizeMolecule(l_img)
+    molecule = Chem.AddHs(l_mol)
+    AllChem.EmbedMolecule(l_mol)
+    AllChem.UFFOptimizeMolecule(l_mol)
 
     # SDFファイルに保存
     writer = Chem.SDWriter(FASTA + '.sdf')
-    writer.write(l_img)
+    writer.write(l_mol)
     writer.close()
 
 if bt2:
     # 3D座標を生成
-    molecule = Chem.AddHs(d_img)
-    AllChem.EmbedMolecule(d_img)
-    AllChem.UFFOptimizeMolecule(d_img)
+    molecule = Chem.AddHs(d_mol)
+    AllChem.EmbedMolecule(d_mol)
+    AllChem.UFFOptimizeMolecule(d_mol)
 
     # SDFファイルに保存
     writer = Chem.SDWriter(fasta.lower() + '.sdf')
-    writer.write(d_img)
+    writer.write(d_mol)
     writer.close()
 
 
