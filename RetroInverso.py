@@ -16,8 +16,11 @@ st.write("")
 FASTA = st.text_area('input FASTA')
 fasta = FASTA[::-1]
 
-st.write('Retro-inversian replied')
-st.write(fasta.lower())
+st.write('Retro-inversian replied "' + fasta.lower() + '"')
+
+type = st.selectbox('Select the Constraint Type of the peptide', 
+                    ['Liner', 'Head to Tail', 'Disulfide']
+                    )
 
 # %%
 from rdkit import Chem
@@ -28,6 +31,7 @@ import streamlit as st
 # aminoacid format
 laa = 'N[C@@]([H])({X})C(=O)'
 daa = 'N[C@@]({X})([H])C(=O)'
+
 # residue dict
 amino_acids = {
     'G': '[H]',
@@ -47,7 +51,7 @@ amino_acids = {
     'E': 'C(CC(=O)O)',
     'H': 'C(C1=CNC=N1)',
     'K': 'CCCCN',
-    'R': 'CCCNC(=N)N'
+    'R': 'CCCNC(=N)N',
 }
 
 # insert variable to format
@@ -56,30 +60,67 @@ daaa = {k: daa.format(X=v) for k, v in amino_acids.items()}
 
 # add prolines and threonines
 laaa['P'] = 'N1[C@@]([H])(CCC1)C(=O)'
-daaa['P'] = 'N1([H])[C@@](CCC1)C(=O)'
+daaa['P'] = 'N1[C@@](CCC1)([H])C(=O)'
 laaa['T'] = 'N[C@@]([H])([C@]([H])(O)C)C(=O)'
 daaa['T'] = 'N[C@@]([C@]([H])(O)C)([H])C(=O)'
 
 
-# FASTA = 'FASTA'
-# fasta = FASTA[::-1]
+FASTA = 'CAWAFAAAC'
+fasta = FASTA[::-1]
+type = 'Disulfide'
+
+
 
 l_sec = ''.join([laaa[aa] for aa in FASTA])
-l_liner = l_sec + 'O'
-l_img = Chem.MolFromSmiles(l_liner)
 d_sec = ''.join([daaa[aa] for aa in fasta])
-d_liner = d_sec + 'O'
-d_img = Chem.MolFromSmiles(d_liner)
 
+# liner
+l_liner = l_sec + 'O'
+d_liner = d_sec + 'O'
+
+# Cyclization
+if '2' in l_sec:
+    l_ht = 'N3' + l_sec[1:-4] + '3(=O)'
+    laaa['J'] = 'N[C@@]([H])(CS3)C(=O)'
+    daaa['J'] = 'N[C@@](CS3)([H])C(=O)'
+    FASTA = FASTA.replace('C', 'J')
+    fasta = FASTA[::-1]
+    l_ds = ''.join([laaa[aa] for aa in FASTA])
+    d_ds = ''.join([daaa[aa] for aa in fasta])
+elif '1' in l_liner:
+    l_ht = 'N2' + l_sec[1:-4] + '2(=O)'
+else:
+    l_ht = 'N1' + l_sec[1:-4] + '1(=O)'
+if '2' in d_sec:
+    d_ht = 'N3' + d_sec[1:-4] + '3(=O)'
+elif '1' in l_liner:
+    d_ht = 'N2' + d_sec[1:-4] + '2(=O)'
+else:
+    d_ht = 'N1' + d_sec[1:-4] + '1(=O)'
+
+
+# Draw.MolToImage(Chem.MolFromSmiles(l_ht), size=(1000, 400))
+
+if type == 'Head to Tail':
+    l_mol = l_ht
+    d_mol = d_ht
+elif type == 'Disulfide':
+    l_mol = l_ds
+    d_mol = d_ds
+else:
+    l_mol = l_liner
+    d_mol = d_liner
+
+# l_mol
+Chem.MolFromSmiles(l_mol)
 
 # %%
 # output
-st.image(Draw.MolToImage(l_img, size=(1000, 400)))
-st.image(Draw.MolToImage(d_img, size=(1000, 400)))
-
+st.image(Draw.MolToImage(Chem.MolFromSmiles(l_mol), size=(1000, 400)))
+st.image(Draw.MolToImage(Chem.MolFromSmiles(d_mol), size=(1000, 400)))
 
 # saves
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 with col1:
     bt1 = st.button('save L.sdf')
 with col2:
@@ -107,4 +148,17 @@ if bt2:
     writer.write(d_img)
     writer.close()
 
+
 # %%
+
+# from rdkit import Chem
+# from rdkit.Chem import Draw, AllChem
+# from rdkit.Chem.Draw import IPythonConsole
+# import streamlit as st
+
+# smiles = 'N[C@@]([H])(CC(=O)O)C(=O)N[C@@]([H])(CC(=O)O)C(=O)N[C@@]([H])(CC(=O)O)C(=O)N[C@@]([H])(C)C(=O)N[C@@]([H])(C)C(=O)N[C@]([H])(C)C(=O)N[C@]([H])(C)C(=O)N[C@]([H])(CC(=O)O)C(=O)N[C@]([H])(CC(=O)O)C(=O)'
+# CyP = smiles[:1] + '1' + smiles[1:-4] + '1' + smiles[-4:]
+# mol = Chem.MolFromSmiles(CyP)
+# mol
+
+
