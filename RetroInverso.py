@@ -78,25 +78,29 @@ d_sec = ''.join([daaa[aa] for aa in fasta])
 l_liner = l_sec + 'O'
 d_liner = d_sec + 'O'
 
-# Cyclization
-if '2' in l_sec:
-    l_ht = 'N3' + l_sec[1:-4] + '3(=O)'
-    laaa['J'] = 'N[C@@]([H])(CS3)C(=O)'
-    daaa['J'] = 'N[C@@](CS3)([H])C(=O)'
-    FASTA = FASTA.replace('C', 'J')
-    fasta = FASTA[::-1]
-    l_ds = ''.join([laaa[aa] for aa in FASTA])
-    d_ds = ''.join([daaa[aa] for aa in fasta])
-elif '1' in l_liner:
-    l_ht = 'N2' + l_sec[1:-4] + '2(=O)'
-else:
-    l_ht = 'N1' + l_sec[1:-4] + '1(=O)'
-if '2' in d_sec:
-    d_ht = 'N3' + d_sec[1:-4] + '3(=O)'
-elif '1' in l_liner:
-    d_ht = 'N2' + d_sec[1:-4] + '2(=O)'
-else:
-    d_ht = 'N1' + d_sec[1:-4] + '1(=O)'
+l_ht = 'N9' + l_sec[1:-4] + '9(=O)'
+d_ht = 'N5' + d_sec[1:-4] + '5(=O)'
+
+
+# # Cyclization
+# if '2' in l_sec:
+#     l_ht = 'N3' + l_sec[1:-4] + '3(=O)'
+#     laaa['J'] = 'N[C@@]([H])(CS3)C(=O)'
+#     daaa['J'] = 'N[C@@](CS3)([H])C(=O)'
+#     FASTA = FASTA.replace('C', 'J')
+#     fasta = FASTA[::-1]
+#     l_ds = ''.join([laaa[aa] for aa in FASTA])
+#     d_ds = ''.join([daaa[aa] for aa in fasta])
+# elif '1' in l_liner:
+#     l_ht = 'N2' + l_sec[1:-4] + '2(=O)'
+# else:
+#     l_ht = 'N1' + l_sec[1:-4] + '1(=O)'
+# if '2' in d_sec:
+#     d_ht = 'N3' + d_sec[1:-4] + '3(=O)'
+# elif '1' in l_liner:
+#     d_ht = 'N2' + d_sec[1:-4] + '2(=O)'
+# else:
+#     d_ht = 'N1' + d_sec[1:-4] + '1(=O)'
 
 
 # Draw.MolToImage(Chem.MolFromSmiles(l_ht), size=(1000, 400))
@@ -112,12 +116,15 @@ else:
     d_mol = d_liner
 
 # l_mol
-Chem.MolFromSmiles(l_mol)
+l_mol = Chem.MolFromSmiles(l_mol)
+d_mol = Chem.MolFromSmiles(d_mol)
 
 # %%
 # output
-st.image(Draw.MolToImage(Chem.MolFromSmiles(l_mol), size=(1000, 400)))
-st.image(Draw.MolToImage(Chem.MolFromSmiles(d_mol), size=(1000, 400)))
+st.image(Draw.MolToImage(l_mol, size=(1000, 400)))
+st.code(Chem.MolToSmiles(l_mol))
+st.image(Draw.MolToImage(d_mol, size=(1000, 400)))
+st.code(Chem.MolToSmiles(d_mol))
 
 # saves
 col1, col2, col3 = st.columns(3)
