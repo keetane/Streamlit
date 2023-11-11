@@ -19,16 +19,16 @@ fasta = FASTA[::-1]
 st.write('Retro-inversian replied "' + fasta.lower() + '"')
 
 type = st.selectbox('Select the Constraint Type of the peptide', 
-                    ['Liner', 'Head to Tail', 'Disulfide']
-                    )
+                    ['Liner', 
+                     'Head to Tail', 
+                     'Cystein Cyclization'
+                     ])
 
 # %%
 from rdkit import Chem
 from rdkit.Chem import Draw, AllChem, rdMolAlign, Draw, rdMolDescriptors
 from rdkit.Chem.Draw import IPythonConsole
 import streamlit as st
-import py3Dmol
-import copy
 
 # aminoacid format
 laa = 'N[C@@]([H])({X})C(=O)'
@@ -67,9 +67,9 @@ laaa['T'] = 'N[C@@]([H])([C@]([H])(O)C)C(=O)'
 daaa['T'] = 'N[C@@]([C@]([H])(O)C)([H])C(=O)'
 
 
-FASTA = 'CAWAFAAAC'
-fasta = FASTA[::-1]
-type = 'Liner'
+# FASTA = 'CAWAFAAAC'
+# fasta = FASTA[::-1]
+# type = 'Liner'
 
 
 
@@ -80,8 +80,13 @@ d_sec = ''.join([daaa[aa] for aa in fasta])
 l_liner = l_sec + 'O'
 d_liner = d_sec + 'O'
 
+# Head to Tail
 l_ht = 'N9' + l_sec[1:-4] + '9(=O)'
 d_ht = 'N9' + d_sec[1:-4] + '9(=O)'
+
+# Cystein Cyclization
+l_cc = 'C9C(=O)' + l_sec + 'N[C@@]([H])(CS9)C(=O)N'
+d_cc = 'C9C(=O)' + d_sec + 'N[C@@](CS9)([H])C(=O)N'
 
 
 # # Cyclization
@@ -110,9 +115,9 @@ d_ht = 'N9' + d_sec[1:-4] + '9(=O)'
 if type == 'Head to Tail':
     l_smiles = l_ht
     d_smiles = d_ht
-elif type == 'Disulfide':
-    l_smiles = l_ds
-    d_smiles = d_ds
+elif type == 'Cystein Cyclization':
+    l_smiles = l_cc
+    d_smiles = d_cc
 else:
     l_smiles = l_liner
     d_smiles = d_liner
@@ -120,16 +125,6 @@ else:
 # l_mol
 l_mol = Chem.MolFromSmiles(l_smiles)
 d_mol = Chem.MolFromSmiles(d_smiles)
-
-# generate 3D conformations
-molecule = Chem.AddHs(l_mol)
-AllChem.EmbedMolecule(l_mol)
-AllChem.UFFOptimizeMolecule(l_mol)
-molecule = Chem.AddHs(d_mol)
-AllChem.EmbedMolecule(d_mol)
-AllChem.UFFOptimizeMolecule(d_mol)
-mols = [l_mol, d_mol]
-
 
 
 # %%
