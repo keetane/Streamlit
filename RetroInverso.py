@@ -140,29 +140,65 @@ with col1:
     bt1 = st.button('save L.sdf')
 with col2:
     bt2 = st.button('save D.sdf')
+with col3:
+    bt3 = st.button('save L&D.sdf')
 
 if bt1:
-    # 3D座標を生成
+    # generate 3D conformations
     molecule = Chem.AddHs(l_mol)
     AllChem.EmbedMolecule(l_mol)
     AllChem.UFFOptimizeMolecule(l_mol)
 
     # SDFファイルに保存
-    writer = Chem.SDWriter(FASTA + '.sdf')
+    if type==2:
+        name = '_ht_l.sdf'
+    elif type==3:
+        name = '_cc_l.sdf'
+    else:
+        name = '_l.sdf'
+    writer = Chem.SDWriter(FASTA + name)
     writer.write(l_mol)
     writer.close()
 
 if bt2:
-    # 3D座標を生成
+    # generate 3D conformations
     molecule = Chem.AddHs(d_mol)
     AllChem.EmbedMolecule(d_mol)
     AllChem.UFFOptimizeMolecule(d_mol)
-
+    mols = [l_mol, d_mol]
     # SDFファイルに保存
-    writer = Chem.SDWriter(fasta.lower() + '.sdf')
+    if type==2:
+        name = '_ht_d.sdf'
+    elif type==3:
+        name = '_cc_d.sdf'
+    else:
+        name = '_d.sdf'
+    writer = Chem.SDWriter(fasta.lower() + name)
     writer.write(d_mol)
     writer.close()
 
+if bt3:
+    # generate 3D conformations
+    Chem.AddHs(l_mol)
+    AllChem.EmbedMolecule(l_mol)
+    AllChem.UFFOptimizeMolecule(l_mol)
+    Chem.AddHs(d_mol)
+    AllChem.EmbedMolecule(d_mol)
+    AllChem.UFFOptimizeMolecule(d_mol)
+    mols = [l_mol, d_mol]
+
+    # SDFファイルに保存
+    if type==2:
+        name = '_ht_dl.sdf'
+    elif type==3:
+        name = '_cc_dl.sdf'
+    else:
+        name = '_dl.sdf'
+
+    writer = Chem.SDWriter(FASTA + name)
+    writer.write(l_mol)
+    writer.write(d_mol)
+    writer.close()
 
 # %%
 
