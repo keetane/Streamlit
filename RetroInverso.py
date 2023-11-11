@@ -24,9 +24,11 @@ type = st.selectbox('Select the Constraint Type of the peptide',
 
 # %%
 from rdkit import Chem
-from rdkit.Chem import Draw, AllChem
+from rdkit.Chem import Draw, AllChem, rdMolAlign, Draw, rdMolDescriptors
 from rdkit.Chem.Draw import IPythonConsole
 import streamlit as st
+import py3Dmol
+import copy
 
 # aminoacid format
 laa = 'N[C@@]([H])({X})C(=O)'
@@ -65,9 +67,9 @@ laaa['T'] = 'N[C@@]([H])([C@]([H])(O)C)C(=O)'
 daaa['T'] = 'N[C@@]([C@]([H])(O)C)([H])C(=O)'
 
 
-# FASTA = 'CAWAFAAAC'
-# fasta = FASTA[::-1]
-# type = 'Disulfide'
+FASTA = 'CAWAFAAAC'
+fasta = FASTA[::-1]
+type = 'Liner'
 
 
 
@@ -79,7 +81,7 @@ l_liner = l_sec + 'O'
 d_liner = d_sec + 'O'
 
 l_ht = 'N9' + l_sec[1:-4] + '9(=O)'
-d_ht = 'N5' + d_sec[1:-4] + '5(=O)'
+d_ht = 'N9' + d_sec[1:-4] + '9(=O)'
 
 
 # # Cyclization
@@ -106,18 +108,29 @@ d_ht = 'N5' + d_sec[1:-4] + '5(=O)'
 # Draw.MolToImage(Chem.MolFromSmiles(l_ht), size=(1000, 400))
 
 if type == 'Head to Tail':
-    l_mol = l_ht
-    d_mol = d_ht
+    l_smiles = l_ht
+    d_smiles = d_ht
 elif type == 'Disulfide':
-    l_mol = l_ds
-    d_mol = d_ds
+    l_smiles = l_ds
+    d_smiles = d_ds
 else:
-    l_mol = l_liner
-    d_mol = d_liner
+    l_smiles = l_liner
+    d_smiles = d_liner
 
 # l_mol
-l_mol = Chem.MolFromSmiles(l_mol)
-d_mol = Chem.MolFromSmiles(d_mol)
+l_mol = Chem.MolFromSmiles(l_smiles)
+d_mol = Chem.MolFromSmiles(d_smiles)
+
+# generate 3D conformations
+molecule = Chem.AddHs(l_mol)
+AllChem.EmbedMolecule(l_mol)
+AllChem.UFFOptimizeMolecule(l_mol)
+molecule = Chem.AddHs(d_mol)
+AllChem.EmbedMolecule(d_mol)
+AllChem.UFFOptimizeMolecule(d_mol)
+mols = [l_mol, d_mol]
+
+
 
 # %%
 # output
@@ -157,15 +170,4 @@ if bt2:
 
 
 # %%
-
-# from rdkit import Chem
-# from rdkit.Chem import Draw, AllChem
-# from rdkit.Chem.Draw import IPythonConsole
-# import streamlit as st
-
-# smiles = 'N[C@@]([H])(CC(=O)O)C(=O)N[C@@]([H])(CC(=O)O)C(=O)N[C@@]([H])(CC(=O)O)C(=O)N[C@@]([H])(C)C(=O)N[C@@]([H])(C)C(=O)N[C@]([H])(C)C(=O)N[C@]([H])(C)C(=O)N[C@]([H])(CC(=O)O)C(=O)N[C@]([H])(CC(=O)O)C(=O)'
-# CyP = smiles[:1] + '1' + smiles[1:-4] + '1' + smiles[-4:]
-# mol = Chem.MolFromSmiles(CyP)
-# mol
-
 
