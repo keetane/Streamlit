@@ -47,6 +47,7 @@ st.radio("ラジオボタン", (select)) #第一引数：リスト名（選択�
 st.sidebar.text_input("文字入力欄") #引数に入力内容を渡せる
 text = st.text_area("input SMILES ")
 
+st.write(text,)
 if text:
     # st.write(text)
     st.image(Draw.MolToImage(Chem.MolFromSmiles(text)), width=400)
